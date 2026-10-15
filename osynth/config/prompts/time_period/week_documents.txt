@@ -1,0 +1,62 @@
+Generate the documents for this week, conditioned on the authoritative
+weekly frame.
+
+The frame has already established the week's narrative direction, state
+changes, and content volume targets. Your job is to elaborate ONLY the
+documents family. Do not introduce themes that contradict the frame. Do
+not generate meetings, emails, or slides.
+
+Template variables:
+  {{COMPANY_SUMMARY}}            — name + industry + size + situation
+  {{NARRATIVE_SUMMARY}}          — period-wide narrative arc
+  {{WEEK_NUM}} / {{TOTAL_WEEKS}} — 1-based week index and total
+  {{WEEK_START}} / {{WEEK_END}}  — ISO dates bounding this week
+  {{WORKING_DAYS_LIST}}          — bullet list of working dates with day_of_week numbers
+  {{PEOPLE_ROSTER}}              — all valid person IDs you may reference
+  {{PROJECTS_ROSTER}}            — all valid project IDs (for related_project_id)
+  {{STATE_SUMMARY}}              — current projects, open action items, recent decisions
+  {{WEEK_FRAME_JSON}}            — authoritative frame produced for this week
+
+Company: {{COMPANY_SUMMARY}}
+Overall narrative: {{NARRATIVE_SUMMARY}}
+Week: {{WEEK_START}} to {{WEEK_END}} (Week {{WEEK_NUM}} of {{TOTAL_WEEKS}})
+Working days this week: {{WORKING_DAYS_LIST}}
+IMPORTANT: Only schedule documents on the working days listed above. Use the day_of_week numbers shown.
+
+People in the organization (use ONLY these person IDs for author_id):
+{{PEOPLE_ROSTER}}
+
+Active projects (use ONLY these project IDs for related_project_id; use null when no project applies):
+{{PROJECTS_ROSTER}}
+
+Current workspace state:
+{{STATE_SUMMARY}}
+
+Authoritative weekly frame (treat as ground truth):
+{{WEEK_FRAME_JSON}}
+
+Generate the documents family. Hit the `documents_target` from the
+frame's content_plan as a soft target. Documents are typically less
+frequent than meetings or emails — only generate one when there is a
+clear authoring reason (a spec, a status report, a wiki update, notes
+from a decision, etc.).
+
+Time-of-day guidance: weekly status documents and review reports land in
+the late afternoon; specs and proposals tend toward mid-morning.
+
+Output a single JSON object:
+{
+  "documents": [
+    {
+      "title": "Document title",
+      "author_id": "p2",
+      "doc_type": "spec|proposal|notes|report|wiki",
+      "day_of_week": 2,
+      "preferred_time": "16:00",
+      "purpose": "Why this document is being created",
+      "related_project_id": "proj_1",
+      "related_meeting_id": null,
+      "approximate_length": "short|medium|long"
+    }
+  ]
+}

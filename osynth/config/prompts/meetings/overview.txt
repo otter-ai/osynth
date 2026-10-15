@@ -1,0 +1,60 @@
+Generate a detailed meeting overview for transcript generation.
+
+Meeting: {{MEETING_TITLE}} ({{MEETING_TYPE}})
+Date/Time: {{START_TIME}} to {{END_TIME}} ({{DURATION_MINUTES}} minutes)
+
+Attendees:
+{{ATTENDEES_DETAIL}}
+
+Company: {{COMPANY_SUMMARY}}
+
+Meeting purpose: {{PURPOSE}}
+
+Agenda:
+{{AGENDA}}
+
+Current workspace context:
+- Active projects: {{PROJECT_SUMMARIES}}
+- Open action items for attendees: {{ACTION_ITEMS}}
+- Recent decisions: {{RECENT_DECISIONS}}
+
+Prior meeting context for these attendees:
+{{PRIOR_MEETING_SUMMARIES}}
+
+{{DOCUMENTS_CONTEXT}}
+{{SLIDES_CONTEXT}}
+
+Expected outcomes:
+{{EXPECTED_OUTCOMES}}
+
+Meeting join context (authoritative — describes how each attendee is joining):
+{{MEETING_JOIN_CONTEXT}}
+
+Technicality level for this meeting: {{TECHNICALITY_LEVEL}}
+{{TECHNICALITY_DESCRIPTION}}
+
+Generate the meeting overview. Include:
+
+1. <overall_summary>
+A 2-3 paragraph summary of what happens in this meeting.
+</overall_summary>
+
+2. <personas>
+For each attendee, describe their speaking style, what they care about in this meeting, and how they interact with others. Format:
+Speaker Name (Title) - personality, speaking style, key concerns
+</personas>
+
+3. <outline>
+A detailed turn-by-turn outline of the meeting flow. Often includes some or all of:
+- Opening/small talk; not all attendees may be present at the start
+- Each agenda item with approximate time and who leads discussion
+- Key discussion points and any disagreements
+- Decisions, where they emerge naturally inside the discussion
+- Action items as they come up during the relevant agenda item
+- A natural, often ragged ending — time runs out, someone has to leave, conversation tapers off
+- Short off-agenda asides that don't get fully resolved
+
+Format each section with approximate timestamps and speaker involvement. Vary how much depth each agenda item gets — real meetings under-cover some items and over-cover others.
+
+When the meeting touches an active project, the outline should reflect the specialized vocabulary that team uses (listed under each project in the workspace context). The team already knows what those terms mean, so they appear naturally inside reasoning, status updates, and asides rather than being introduced or defined. The technicality level above governs how often and how densely that vocabulary surfaces — let it manifest organically inside the discussion rather than as a verbatim recitation of the term list.
+</outline>

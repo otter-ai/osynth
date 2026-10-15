@@ -1,0 +1,52 @@
+Generate the next email message in this thread.
+
+Company context:
+{{COMPANY_SUMMARY}}
+
+Thread so far:
+{{THREAD_HISTORY}}
+
+New message specification:
+- Sender ID: {{SENDER_ID}}
+- Sender name: {{SENDER_NAME}}
+- Sender profile:
+{{SENDER_PROFILE}}
+- TO recipient IDs: {{RECIPIENT_IDS}}
+- TO recipient names: {{RECIPIENT_NAMES}}
+- CC recipient IDs: {{CC_IDS}}
+- CC recipient names: {{CC_NAMES}}
+- Thread subject: {{THREAD_SUBJECT}}
+- Message purpose: {{MESSAGE_PURPOSE}}
+- Day/time context: {{TIMESTAMP_CONTEXT}}
+
+Current workspace context:
+{{WORKSPACE_CONTEXT}}
+
+Project context (vocabulary the team uses when discussing this project):
+{{PROJECT_CONTEXT}}
+
+Related context (if any):
+{{RELATED_CONTEXT}}
+
+Requirements:
+- The message should flow naturally from the thread history (if any)
+- If this is the first message, establish the thread topic clearly
+- If this is a reply, reference and build on previous messages
+- Tone should match the sender's role and relationship with recipients
+- Include realistic email conventions (greeting, sign-off). {lang:email_conventions_note}
+- Address greetings primarily to the TO recipients; do not greet arbitrary thread participants who are only in CC unless the message body specifically warrants it.
+- Keep length realistic for the message type (quick reply vs. detailed update)
+- The JSON routing contract is strict: `sender_id`, `recipient_ids`, and `cc_ids` must exactly match the provided values.
+- When the message discusses one of the projects listed under "Project context", the sender should use that project's specialized vocabulary the way a real practitioner does: introduce an acronym once and then shorthand it, mix domain terms with everyday phrasing, sometimes use a colloquial synonym instead of the full term. Do not force every listed term into the message; use only the ones relevant to what is being said, and do not gloss or define them — the recipient already knows the project.
+
+Output a single JSON object:
+{
+  "id": "{{MESSAGE_ID}}",
+  "thread_id": "{{THREAD_ID}}",
+  "sender_id": "{{SENDER_ID}}",
+  "recipient_ids": ["p1", "p2"],
+  "cc_ids": [],
+  "subject": "Subject line (include Re: for replies)",
+  "body": "Full email body text",
+  "reply_to_id": "previous_message_id or null"
+}

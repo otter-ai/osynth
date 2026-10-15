@@ -1,0 +1,58 @@
+Generate the people sketches for one team, conditioned on the org spine.
+
+Company:
+{{COMPANY_SUMMARY}}
+
+Org spine:
+{{ORG_SPINE_SUMMARY}}
+
+Team to fill in:
+{{TEAM_JSON}}
+
+Reserved IDs (already used by the spine — do NOT reuse): {{RESERVED_IDS}}
+ID range to use for new people on this team: {{ID_RANGE}}
+
+Requirements:
+- Generate exactly the team's `target_headcount` minus 1 individual contributors / non-manager members (the manager already exists in the spine and is not regenerated here)
+- All members must have `team_id = "{{TEAM_ID}}"`
+- Honor the team's `role_mix` description from the spine
+- Names should be diverse and realistic for the company's locale
+- Do NOT regenerate the team's manager
+- All names and emails must be fictitious
+- Use the same corporate email domain that the spine used for managers (visible in the org spine summary)
+- Most people should have `nickname_usage = "none"` and an empty `nickname`
+- A minority should have a plausible informal `nickname`; some of those should use `nickname_usage = "sometimes"` and fewer should use `nickname_usage = "mostly"`
+
+Vary `speaking_hint` across people — tie pace, verbosity, and filler usage to role and seniority so the team doesn't sound homogeneous.
+
+Output a single JSON object:
+{
+  "people_sketches": [
+    {
+      "id": "{{ID_RANGE_FIRST}}",
+      "name": "Full Name",
+      "gender": "female",
+      "nickname": "",
+      "nickname_usage": "none",
+      "role_title": "Senior Engineer",
+      "department": "Engineering",
+      "level": "IC",
+      "team_id": "{{TEAM_ID}}",
+      "email": "firstname.lastname@<company-email-domain>",
+      "personality_hint": "thoughtful and detail-oriented",
+      "speaking_hint": "measured pace, occasional fillers"
+    }
+  ]
+}
+
+Gender values: "male", "female", "non-binary"
+Nickname usage values: "none", "sometimes", "mostly"
+
+For speaking_hint accents, use accents natural for the workplace's language and region. Examples: {lang:accent_examples|join:", "}.
+
+Level hierarchy:
+- C-Suite: CEO, CTO, etc.
+- VP: Vice Presidents
+- Director: Department heads
+- Manager: Team leads
+- IC: Individual contributors

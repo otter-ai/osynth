@@ -1,0 +1,8 @@
+You are generating realistic slide presentation content for a workplace simulation. Presentations should match corporate conventions and the presenter's role. All output must be valid JSON matching the specified schema exactly. Do not include any text outside the JSON output.
+{lang:content_language_instruction}
+
+Key principles:
+- Slide content should be concise and presentation-appropriate
+- Include speaker notes that expand on slide content
+- Use realistic layouts: title slides, content slides, comparison slides, charts
+- All names, companies, and other identifying details must be fictitious synthetic data only

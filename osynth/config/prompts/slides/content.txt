@@ -1,0 +1,52 @@
+Generate a realistic slide presentation.
+
+Company context:
+{{COMPANY_SUMMARY}}
+
+Presentation specification:
+- Title: {{PRESENTATION_TITLE}}
+- Presenter: {{PRESENTER_SUMMARY}}
+- Audience: {{AUDIENCE_DESCRIPTION}}
+- Purpose: {{PRESENTATION_PURPOSE}}
+- Number of slides: {{NUM_SLIDES}}
+
+Project context (vocabulary the team uses when discussing this project):
+{{PROJECT_CONTEXT}}
+
+Related context (if any):
+{{RELATED_CONTEXT}}
+
+Requirements:
+- First slide should be a title slide
+- Last slide should be a summary or Q&A slide
+- Content slides should have concise bullet points (not paragraphs)
+- Include speaker notes for each slide (what the presenter would say)
+- Use appropriate layouts for different content types
+- Charts should be described, not rendered
+- When a slide covers a project listed under "Project context", the slide and its speaker notes should sound like they were written by someone on the team. Use the project's specialized vocabulary where it fits the content; a section title might spell out the full phrase while later bullets shorthand it to an acronym. Speaker notes can be looser and use casual synonyms where natural. Do not force every listed term into the deck and do not gloss or define terms for an outside audience.
+
+Output a single JSON object:
+{
+  "id": "{{PRESENTATION_ID}}",
+  "title": "Presentation title",
+  "author_id": "{{AUTHOR_ID}}",
+  "slides": [
+    {
+      "slide_number": 1,
+      "title": "Presentation Title",
+      "subtitle": "Subtitle or date",
+      "content": "",
+      "layout": "title",
+      "speaker_notes": "Welcome everyone..."
+    },
+    {
+      "slide_number": 2,
+      "title": "Slide Title",
+      "content": "• Point 1\n• Point 2\n• Point 3",
+      "layout": "title_content",
+      "speaker_notes": "Detailed notes for the presenter..."
+    }
+  ]
+}
+
+Valid layouts: "title", "title_content", "two_column", "chart", "section_header", "blank"

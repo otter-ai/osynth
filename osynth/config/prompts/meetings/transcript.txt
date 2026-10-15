@@ -1,0 +1,93 @@
+Generate a realistic meeting transcript from this overview.
+
+Meeting: {{MEETING_TITLE}} ({{MEETING_TYPE}})
+Duration: {{DURATION_MINUTES}} minutes
+Target word count: {{TARGET_WORDS}} words total across all speakers
+Turn count: emit approximately {{TARGET_TURNS}} turns. This is the primary structural target for this transcript — a transcript with far fewer turns will be rejected even if it hits the word count.
+CRITICAL: reach {{TARGET_TURNS}} turns by covering more ground and more genuine back-and-forth, NOT by making turns shorter. Keep individual turns at the natural lengths given in the turn-length distribution below (medium turns of 6-25 words should stay 6-25 words). More turns means a longer, more conversational meeting — not the same meeting chopped finer.
+Hard minimum: {{MIN_WORDS}} words. A transcript under this floor will be rejected and regenerated. Distribute words across the whole agenda — do not cluster them in one section.
+
+Overview:
+{{MEETING_OVERVIEW}}
+
+Attendee roster (authoritative speaker list):
+{{ATTENDEE_ROSTER}}
+
+Attendee speaking profiles:
+{{ATTENDEES_SPEAKING_PROFILES}}
+
+{{SLIDE_CONTEXT}}
+
+Meeting join context (authoritative — how each attendee is joining):
+{{MEETING_JOIN_CONTEXT}}
+
+The join context above governs how attendees physically/audibly participate (in-room reactions, remote dial-in friction, hybrid bridging). It does NOT relax speaker grounding, content coverage, or any structural requirement below. Every turn must still use a valid `speaker_id` from the roster and the transcript must still cover the overview.
+
+Technicality level for this meeting: {{TECHNICALITY_LEVEL}}
+{{TECHNICALITY_DESCRIPTION}}
+
+Generate the full transcript as a JSON array of turns. Each turn is one speaker's utterance.
+
+Real meeting transcripts are messy. A transcript that reads like a screenplay, with clean turn-taking, articulate paragraphs, and a closing recap of action items, is a giveaway that it is synthetic. Your goal is to produce dialogue that would pass for a real recorded meeting in everything except speaker labels.
+
+Content coverage (non-negotiable):
+- Every agenda item, action item, decision, project status update, blocker, and key detail from the overview MUST appear somewhere in the transcript dialogue. Coverage is mandatory; this is ground truth for downstream evaluation.
+- You may reorder items, vary how much time is spent on each, and have items surface inside other items' discussion. You may NOT silently drop content from the overview.
+- The messiness rules below govern *how* content is delivered (interleaved, interrupted, register-varied), not *whether* it is delivered.
+
+Conversation structure:
+- Turn-length distribution depends on meeting duration. Short slots (<= 15 min): ~40% very short (1-5 words), ~40% medium (6-25 words), ~15% longer (25-60 words). Longer slots (> 15 min): shift toward ~25% very short, ~45% medium, ~25% longer (25-80 words), rare turns up to ~80 words. Long meetings necessarily contain more substantive blocks; a 30-minute meeting cannot be 800 words of one-word turns. Whatever the mix, hit it by breaking any multi-sentence point across multiple turns and interleaving short listener reactions on separate turns. Pick the listener and phrase from each attendee's `backchannels` frequency and `backchannel_phrases` in the speaking profile above (higher-frequency listeners interject more often, each speaker prefers their own listed phrases); when none fits, use a brief clarifying question or acknowledgment in the meeting's language. One speaker holding the floor across multiple sentences with no listener turns interleaved is the dominant tell of synthetic output; avoid it.
+- Speakers interrupt and cut each other off. Indicate this implicitly by ending the cut-off turn at the point of interruption with normal punctuation (a period or comma) and starting the next speaker's turn abruptly. Do NOT use em-dashes, double-dashes, or ellipses to signal interruption or trailing-off speech. The interrupted speaker sometimes returns to their point a few turns later, sometimes yields, sometimes never comes back to it.
+- When a speaker resumes a thought after a brief listener interjection, or picks up mid-sentence after being momentarily cut off, their resumed turn should sometimes start mid-thought rather than re-introducing the idea. Continue the previous thought directly using whatever continuation marker is natural in the meeting's language (a connective, a brief reframe, picking up where the sentence broke off) instead of restating context the listener already has. A handful of these mid-thought continuations per meeting is realistic; turns that always begin as fresh, fully-framed sentences read as written prose rather than captured speech.
+- Not every question gets a clean answer immediately. Some get deflected, partially answered, or returned to later in the meeting.
+- Include one brief off-agenda aside so the conversation isn't a tight march through the overview; downstream passes may reshape it further.
+- Action items emerge messily inside the discussion: partial commitments, deferred decisions, half-assigned owners, tasks left briefly ambiguous about who owns them before being clarified. The structured `action_items` and `decisions` JSON fields below should *summarize* what was committed inside the messy dialogue. They must not drive the shape of the dialogue.
+{{ANTI_EXPOSITION_BLOCK}}
+Per-speaker register variation:
+- Speakers must NOT all sound equally articulate or equally domain-fluent. Use the attendee speaking profiles above to vary register. Junior or less-fluent speakers are terser, less precise, more hedged, more likely to ask basic questions. Senior speakers are sharper but still stumble. ESL speakers may use slightly less idiomatic phrasing.
+- Each speaker should have their own verbal tics, hedges, and favored phrases drawn from their speaking profile. The same idea phrased by two different people should sound different, not just contain different words.
+- Avoid uniform technical precision across all speakers. Real meetings have one or two people who own the jargon and others who use it loosely or imprecisely.
+- Specialized vocabulary from the project context may surface if the topic naturally calls for it. Do not force terms in or engineer callbacks (introduce early, abbreviate, resurface) — let the conversation decide. The technicality level above governs how often domain vocabulary is likely to appear, not whether it must.
+
+Light inline messiness (the spoken-form pass adds token-level disfluencies later, so keep this restrained):
+- A few self-corrections per meeting where the speaker abandons a phrase mid-sentence and rephrases. Render these by simply ending the abandoned phrase with a comma or period and starting the rephrase as the next sentence in the same turn. Do not blanket every long turn with these.
+- Occasional hedges drawn from the speaker's profile.
+- Do NOT pre-inject filler words like "um" or "uh", word-level repetitions, or vowel prolongations. Those are added in a later TTS-formatting pass and stacking them here would over-saturate.
+- Do NOT use em-dashes or ellipses anywhere in the transcript text. Real ASR output rarely produces either; both are stylistic tells of LLM-generated writing.
+
+Other requirements:
+- Include realistic small talk at the open. Not every meeting opens with all attendees present; some join 30 seconds late.
+- Hit the target word count stated at the top of this prompt (= duration_minutes * {lang:words_per_minute_range} WPM). Under-generation is the dominant failure mode — if you have covered the overview but are short of the target, expand discussions, add genuine back-and-forth, and explore tangents rather than wrapping early.
+- If slides are provided, speakers reference them naturally ("as you can see on this slide", "moving to the next slide", "on slide 3 here"). References can also be sloppy ("wait, was that on the next one"). Align transcript sections roughly with the slide order, not rigidly.
+- IMPORTANT: Each turn must contain speech from exactly ONE speaker. When conversation naturally bounces back and forth (e.g., speaker A says something, speaker B responds briefly, then A continues), use separate turns for each speaker change. Never combine multiple speakers' contributions into a single turn, even if one speaker's part is very short (e.g., a brief "yes" or acknowledgment before someone else continues).
+- Speaker grounding is strict: every turn must use a `speaker_id` from the attendee roster above. Do not invent speakers or aliases. Never use a nickname as a `speaker_id`.
+- Output only `speaker_id` and `text` for each turn. Do not emit `speaker_name`; the pipeline derives speaker labels from `speaker_id`.
+- When one speaker refers to another attendee in the utterance text, follow that attendee's nickname policy from the roster and speaking profile.
+- For `nickname_usage=none`, use normal canonical first/full-name references when a name is natural.
+- For `nickname_usage=sometimes`, use a natural mix of canonical first/full-name references and the nickname.
+- For `nickname_usage=mostly`, use the nickname for nearly all informal spoken references, except when a full name is contextually natural.
+
+Output a single JSON object:
+{
+  "turns": [
+    {
+      "speaker_id": "p1",
+      "text": "What the speaker says. Varied turn length per the rules above, light self-corrections only, no em-dashes, no ellipses, no pre-injected filler words"
+    }
+  ],
+  "summary": "2-3 sentence meeting summary",
+  "outline": "Topic outline with approximate timestamps",
+  "action_items": [
+    {
+      "description": "What needs to be done",
+      "assignee_id": "p2",
+      "due_description": "by end of week"
+    }
+  ],
+  "decisions": [
+    {
+      "description": "What was decided",
+      "participant_ids": ["p1", "p2"]
+    }
+  ]
+}

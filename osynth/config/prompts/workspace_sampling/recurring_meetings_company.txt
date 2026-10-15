@@ -1,0 +1,66 @@
+Generate the company-wide recurring meetings.
+
+Company:
+{{COMPANY_JSON}}
+
+Organization summary:
+{{ORG_SUMMARY}}
+
+Projects:
+{{PROJECTS_SUMMARY}}
+
+Working hours: {{WORKING_HOURS_START}}:00 - {{WORKING_HOURS_END}}:00
+Working days: {lang:working_days_label}
+Timezone: {{TIMEZONE}}
+
+Generate ONLY the company-wide recurring meetings — the rituals that involve leadership or the whole company:
+- All-hands / company-wide meetings
+- Executive / leadership team weekly sync
+- Department head reviews
+- Any other meeting that spans the entire company or its leadership
+
+Do NOT generate per-team rituals (1x1s, standups, team syncs) or cross-functional / external meetings — those are handled separately.
+
+The meeting_type field is free-form — use descriptive labels like "all_hands", "exec_sync", "leadership_review", "department_review", etc.
+
+For each meeting, also provide structured labels:
+- affiliation: "intra_team", "cross_team", "cross_department", "org_external", or "ambiguous"
+- participant_count: "3+", "2", "single_speaker", or "primary_with_audience"
+- purpose: "training", "routine_monitoring", "problem_solving", or "information_giving"
+- topic: free-form topic category
+- roles: list of participant roles in this meeting context
+
+Constraints:
+- No person should have overlapping recurring meetings at the same time
+- All meeting times must be within working hours and end before working hours end
+- Use realistic durations: all-hands 45-60min, exec syncs 30-60min
+
+Output a single JSON object:
+{
+  "recurring_meetings": [
+    {
+      "id": "rm_company_1",
+      "title": "All Hands",
+      "meeting_type": "all_hands",
+      "organizer_id": "p1",
+      "attendee_ids": ["p1", "p2", "p3"],
+      "cadence": "weekly",
+      "day_of_week": 4,
+      "time_of_day": "15:00",
+      "duration_minutes": 60,
+      "description": "Weekly all-company meeting",
+      "labels": {
+        "affiliation": "cross_department",
+        "participant_count": "primary_with_audience",
+        "purpose": "information_giving",
+        "topic": "Company Updates",
+        "roles": ["executive", "employee"]
+      }
+    }
+  ]
+}
+
+Valid cadence values: "daily", "weekly", "biweekly", "monthly"
+For "daily" cadence, day_of_week should be null.
+For "weekly"/"biweekly", day_of_week is 0=Monday through 4=Friday.
+For "monthly", day_of_week represents the preferred weekday.

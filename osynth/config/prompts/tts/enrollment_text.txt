@@ -1,0 +1,57 @@
+You are generating reusable text-to-speech enrollment passages for a synthetic workplace speaker.
+
+The spoken language is {lang:name}. Every candidate must remain in {lang:name}.
+
+Return JSON only in this exact shape:
+{
+  "speaker_id": "{{SPEAKER_ID}}",
+  "language": "{lang:code}",
+  "candidates": [
+    {
+      "id": "c1",
+      "topical_seed": "recent_work",
+      "duration_target": "target",
+      "text": "..."
+    }
+  ]
+}
+
+Each candidate object in the returned `candidates` array must include:
+- `id`
+- `topical_seed`
+- `duration_target`
+- `text`
+
+Candidate plan to follow exactly:
+{{CANDIDATE_PLAN_JSON}}
+
+Task:
+- Generate exactly {{CANDIDATE_COUNT}} candidates using the provided `id`, `topical_seed`, and `duration_target` plan.
+- Each candidate must be a single paragraph of plausible spoken workplace speech.
+- The candidates should sound like the same person, but differ in topical seed, opening sentence, and sentence rhythm so a synthesis failure on one phrasing is less likely to repeat on the others.
+- Target spoken duration band is roughly {{MIN_SECONDS}} to {{MAX_SECONDS}} seconds.
+- Candidates tagged `duration_target="target"` should aim closest to {{TARGET_SECONDS}} seconds.
+- Candidates tagged `duration_target="short"` should skew meaningfully shorter than `target`.
+- Candidates tagged `duration_target="long"` should skew meaningfully longer than `target`.
+
+Content rules:
+- Make the text sound natural when read aloud.
+- Reflect the speaker's role, seniority, register, and vocabulary range.
+- Keep the text generic enough to reuse across future meetings.
+- Use the provided `topical_seed` values directly: each candidate should clearly follow its assigned topical angle.
+- Prefer 3 to 5 complete sentences.
+- Mild contractions are fine.
+- Avoid heavy filler words, false starts, backchannels, lists, tables, timestamps, ticket IDs, exact dates, meeting-specific facts, markdown, and quotation marks around the whole paragraph.
+- Do not copy the source transcript or representative utterances verbatim. Use them as style evidence only.
+
+Speaker profile:
+{{SPEAKER_SUMMARY}}
+
+Source voice transcript:
+{{SOURCE_TRANSCRIPT}}
+
+Representative meeting utterances:
+{{REPRESENTATIVE_UTTERANCES}}
+
+Optional authored writing snippets:
+{{AUTHORED_SNIPPETS}}

@@ -1,0 +1,18 @@
+Generate a realistic company profile.
+
+Company size category: {{COMPANY_SIZE}}
+Industry preference: {{INDUSTRY}}
+Domain preference: {{DOMAIN}}
+
+Output a single JSON object with these exact fields:
+{
+  "name": "Realistic company name (not generic like 'TechCorp')",
+  "domain": "Business domain (e.g., 'fintech', 'healthtech', 'developer_tools')",
+  "industry": "Specific industry (e.g., 'B2B SaaS', 'Biotech', 'E-commerce')",
+  "size": "{{COMPANY_SIZE_ENUM}}",
+  "location": "{lang:location_format}",
+  "description": "2-3 sentences describing what the company does, its products, and market position",
+  "founding_year": 2018,
+  "products": ["Product/service 1", "Product/service 2"],
+  "current_situation": "Brief description of current business context (e.g., 'Series B startup scaling engineering team', 'Mid-size company launching new product line')"
+}

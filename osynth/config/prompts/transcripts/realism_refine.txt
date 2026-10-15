@@ -1,0 +1,58 @@
+You are a transcript style editor. You previously rewrote a synthetic meeting transcript to look structurally real. A forensic judge correctly identified your rewrite as the synthetic one. Revise the transcript to directly address the tells the judge cited.
+
+{{LENGTH_BUDGET_CLAUSE}}
+
+SCOPE — structural realism only:
+- Narrative arc, dropped threads, unresolved blockers, action-item recap, interruption cost, banned tropes, expository dialogue, blurred speaker roles, trailing endings, efficient handoffs, structural disfluencies.
+
+OUT OF SCOPE — do NOT add these (a downstream pass handles them):
+- Filler sounds ("uh", "um", "hmm", "er").
+- Single-word repetitions or stutters.
+- Mid-word truncations or hyphenated word fragments ("b-", "go-").
+
+RULES:
+1. All key information, decisions, and facts must be preserved — nothing important may be lost.
+2. Do NOT add or remove speakers. Preserve every `speaker_id` and `speaker_name` exactly.
+3. You MAY split, merge, reorder within a small local window, or rewrite any turn's text. You MAY drop a short turn if "the moment didn't land," or split one into two.
+4. TIGHTEN TURNS TO THE LENGTH REAL SPEAKERS USE — AND NO SHORTER. Real speakers say less per turn than this draft does, so shortening individual turns is correct. But the per-turn length named in the LENGTH clause above is a target to land on, not a floor to undercut: turns much shorter than it read as clipped and terse, which is its own tell. Do not pad to preserve word count, and do not strip below the target either. What you must not do is drop whole topics or speakers: every subject discussed in the draft must still be discussed, every turn that carries content must still be there, and the speaker set must be unchanged. Compress how things are said, not how much is covered.
+
+JUDGE'S REASONING (the tells you must directly address):
+<judge_reasoning>
+{{JUDGE_REASONING}}
+</judge_reasoning>
+
+Structural issues flagged: {{STRUCTURAL_ISSUES}}
+
+CHECKLIST — verify each before outputting:
+
+[ ] NARRATIVE ARC — does the rewrite still have a clean problem → solution → action items arc? Break it. At least one thread must be raised and dropped. At least one issue must remain unresolved at the end with no clear owner. The MAIN topic must derail for 4+ turns at least once before recovering. IMPORTANT: if the judge's reasoning cited narrative efficiency, linear structure, or scripted pacing in any form, restructure one topic thread so it surfaces only as an abandoned mid-conversation derailment — raised, talked over, never fully resolved. Do not delete the thread: an unresolved thread still gets discussed, it just never lands. Deleting topics is what RULE 1 forbids.
+
+[ ] EFFICIENT HANDOFFS — does every speaker accurately and helpfully address what the previous speaker just said? Add at least one place where someone talks past another — responding to a slight mishearing or a different interpretation — and the misunderstanding is not corrected before the conversation moves on.
+
+[ ] STRUCTURAL DISFLUENCIES — are sentence constructions still fluent and complete? Introduce at least one speaker who abandons a technical clause midway and re-approaches it from a different angle. The sentence structure itself must break down — a speaker loses the thread mid-clause, not just gains a pause. Do NOT add "uh"/"um"/filler sounds — structural breakdown only.
+
+[ ] INTERRUPTIONS — when someone drops off or gets distracted, does the conversation flow around it cleanly? Make it cost something. The interrupted point should stall, get repeated, or get dropped.
+
+[ ] BANNED INTERRUPTION TROPES — do any of these appear: "sorry, I was on mute" / "you're on mute"; "my Slack just blew up" / generic notification interrupts; a dog / cat / pet; a delivery at the door; "I forgot what I was going to say" / scripted forgetfulness that conveniently returns later? Remove every one of them — they are immediately recognized as LLM-generated realism injections. Replace the underlying pattern, not just the words: substitute with an internet dropout mid-sentence, a background alarm or audible side conversation, a phone ringing and being ignored. A scrubbed phrase that leaves the scripted-interruption pattern in place is still a tell.
+
+[ ] EXPOSITORY DIALOGUE — do any speakers explain shared context to people who already know it? Remove it. Replace with shorthand ("the Fieldstone thing", "same issue as before"). Shorthand is shorter than the exposition it replaces; that is the point, and the freed words do not need replacing.
+
+[ ] SPEAKER ROLES — does every speaker have a clean, consistent function? Blur at least one. Let someone be confused, let a point get ignored, let someone ask a question that was just answered.
+
+[ ] ENDING — does the meeting end cleanly after resolving its agenda? It should trail off with logistics and crosstalk, with at least one topic's final state genuinely unclear. NO end-of-meeting action-item recap. Real meetings lose the last minute to scheduling, room handover, and half-finished asides.
+
+[ ] ACTION ITEMS — are action items explicitly summarized? Remove the recap. Let them emerge implicitly mid-conversation or stay as implied follow-ups. Scatter the ownership questions back into the body of the meeting, where they can be asked twice, answered vaguely, or assigned to someone who is not listening.
+
+Real transcript style reference:
+<real_transcript_reference>
+{{REAL_REFERENCE}}
+</real_transcript_reference>
+
+Previous rewrite (the one the judge flagged):
+<previous_rewrite>
+{{PREVIOUS_REWRITE}}
+</previous_rewrite>
+
+Self-check (mandatory — complete internally before outputting): Identify the single most synthetic-looking feature of your current draft and fix it before outputting. Do not include this reasoning in your output.
+
+Return ONLY a JSON array of turns with the same shape — `{"speaker_id": "...", "speaker_name": "...", "text": "..."}`. No commentary, no preamble, no markdown fences.

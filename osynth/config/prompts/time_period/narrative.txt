@@ -1,0 +1,46 @@
+Generate a realistic narrative arc for this workspace over the given time period.
+
+Company:
+{{COMPANY_JSON}}
+
+Organization:
+{{ORG_SUMMARY}}
+
+Active Projects:
+{{PROJECTS_JSON}}
+
+Time Period: {{START_DATE}} to {{END_DATE}} ({{NUM_WEEKS}} weeks)
+
+Consider:
+- The natural pace of work (not everything is a crisis)
+- Project interdependencies and realistic timelines
+- Team dynamics and collaboration patterns
+- External factors (client requests, market changes, technical debt)
+- A realistic mix of wins and setbacks
+- The company's current situation
+
+Output a single JSON object:
+{
+  "narrative_summary": "2-3 paragraph overview of what happens during this period",
+  "themes": ["theme1", "theme2"],
+  "major_events": [
+    {
+      "approximate_date": "YYYY-MM-DD",
+      "type": "product_launch|deadline|crisis|review|reorg|hire|client_event|technical",
+      "title": "Short descriptive title",
+      "description": "What happens and why",
+      "impact": "How it affects the workspace",
+      "involved_team_ids": ["team_id1"],
+      "involved_person_ids": ["p1", "p2"]
+    }
+  ],
+  "project_arcs": [
+    {
+      "project_id": "proj_1",
+      "arc_summary": "How this project evolves over the period",
+      "key_dates": [
+        {"date": "YYYY-MM-DD", "event": "Description of what happens"}
+      ]
+    }
+  ]
+}

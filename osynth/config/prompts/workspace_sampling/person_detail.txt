@@ -1,0 +1,80 @@
+Expand this person sketch into a fully detailed person profile.
+
+Company context:
+{{COMPANY_SUMMARY}}
+
+Organization context (teams and people):
+{{ORG_SKETCH_SUMMARY}}
+
+Person sketch:
+{{PERSON_SKETCH_JSON}}
+
+Generate the full person profile. Include:
+1. Detailed role responsibilities (3-5 items specific to their role and company)
+2. Specific personality traits (3-5 traits)
+3. Specific expertise areas (3-5 areas relevant to their role)
+4. Complete speaking style with disfluency parameters
+
+Preserve the sketch identity fields exactly, including `id`, `name`, `gender`,
+`nickname`, `nickname_usage`, `team_id`, `email`, title, department, and level.
+
+Choose a `work_arrangement` for this person — one of:
+- `remote`     — works from home full-time, almost always joins meetings via video
+- `hybrid`     — splits time between office and home, joins from either depending on the day
+- `in_person`  — primarily works from a company office, joins from a conference room or office when possible
+Pick the value that best fits this person's role, level, and likely working style. Executives and roles tied to a physical site (e.g. lab work, customer-facing in-office roles) skew `in_person` or `hybrid`; engineering ICs and remote-first roles skew `remote` or `hybrid`.
+
+The speaking style should be realistic and varied:
+- Executives tend to be measured, use fewer fillers
+- Junior ICs may use more fillers and hedges
+- Sales people tend to be faster-paced and more verbose
+- Engineers may be more terse and technical
+- Match the speaking_hint from the sketch
+
+Output a single JSON object:
+{
+  "id": "{{PERSON_ID}}",
+  "name": "Same name from sketch",
+  "gender": "same gender from sketch",
+  "nickname": "same nickname from sketch",
+  "nickname_usage": "same nickname_usage from sketch",
+  "role": {
+    "title": "Same title from sketch",
+    "department": "Same department",
+    "level": "Same level",
+    "responsibilities": ["Responsibility 1", "Responsibility 2", "Responsibility 3"]
+  },
+  "team_id": "same team_id",
+  "email": "same email",
+  "work_arrangement": "remote|hybrid|in_person",
+  "personality_traits": ["trait1", "trait2", "trait3"],
+  "expertise": ["area1", "area2", "area3"],
+  "speaking_style": {
+    "pace": "fast|slow|measured|variable",
+    "verbosity": "terse|concise|average|verbose",
+    "interruption_tendency": "none|low|moderate|high",
+    "accent": "Description of accent/dialect",
+    "notable_patterns": ["pattern1", "pattern2"],
+    "disfluency": {
+      "filler_rate": 3.0,
+      "filler_words": ["um", "uh", "like"],
+      "repetition_rate": 1.0,
+      "restart_rate": 0.5,
+      "truncation_rate": 2.0,
+      "elongation_rate": 0.2,
+      "hedge_words": ["I think", "probably"],
+      "backchannel_frequency": "moderate",
+      "backchannel_phrases": ["mm-hmm", "yeah", "right", "got it"]
+    }
+  }
+}
+
+Filler rate guide (fillers per 100 words):
+- Very polished speaker: 1-2
+- Average professional: 3-5
+- Frequent filler user: 6-8
+
+Common filler words: "{lang:filler_words|join:", "}"
+Common hedge words: "{lang:hedge_words|join:", "}"
+
+Backchannel phrases: pick 3-6 phrases this person would naturally use while listening. Vary across speakers. Examples: "{lang:backchannel_phrases|join:", "}"

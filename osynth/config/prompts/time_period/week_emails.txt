@@ -1,0 +1,73 @@
+Generate the email threads for this week, conditioned on the
+authoritative weekly frame.
+
+The frame has already established the week's narrative direction, state
+changes, and content volume targets. Your job is to elaborate ONLY the
+email family. Do not introduce themes that contradict the frame. Do not
+generate meetings, documents, or slides.
+
+Template variables:
+  {{COMPANY_SUMMARY}}            — name + industry + size + situation
+  {{NARRATIVE_SUMMARY}}          — period-wide narrative arc
+  {{WEEK_NUM}} / {{TOTAL_WEEKS}} — 1-based week index and total
+  {{WEEK_START}} / {{WEEK_END}}  — ISO dates bounding this week
+  {{WORKING_DAYS_LIST}}          — bullet list of working dates with day_of_week numbers
+  {{PEOPLE_ROSTER}}              — all valid person IDs you may reference
+  {{PROJECTS_ROSTER}}            — all valid project IDs (for related_project_id)
+  {{STATE_SUMMARY}}              — current projects, open action items, recent decisions
+  {{EVENTS_THIS_WEEK}}           — narrative events scheduled this week
+  {{WEEK_FRAME_JSON}}            — authoritative frame produced for this week
+
+Company: {{COMPANY_SUMMARY}}
+Overall narrative: {{NARRATIVE_SUMMARY}}
+Week: {{WEEK_START}} to {{WEEK_END}} (Week {{WEEK_NUM}} of {{TOTAL_WEEKS}})
+Working days this week: {{WORKING_DAYS_LIST}}
+IMPORTANT: Only schedule emails on the working days listed above. Use the day_of_week numbers shown.
+
+People in the organization (use ONLY these person IDs for initiator_id, participant_ids, and cc_ids):
+{{PEOPLE_ROSTER}}
+
+Active projects (use ONLY these project IDs for related_project_id; use null when no project applies):
+{{PROJECTS_ROSTER}}
+
+Current workspace state:
+{{STATE_SUMMARY}}
+
+Major events scheduled this week:
+{{EVENTS_THIS_WEEK}}
+
+Authoritative weekly frame (treat as ground truth):
+{{WEEK_FRAME_JSON}}
+
+Generate the email threads family. Hit the `emails_target` from the
+frame's content_plan as a soft target — vary by ±1 if the narrative
+demands. Email tone should ladder up from the frame's priorities.
+
+Routing guidance:
+- `participant_ids` should list the active correspondents on the thread: the initiator plus anyone likely to reply in the thread.
+- `cc_ids` should list optional copied recipients who are informed but are not expected to drive the reply chain.
+- Do not overlap `participant_ids` and `cc_ids`.
+
+Time-of-day guidance: urgent or incident threads start early in the
+morning; EOD recaps go out near close-of-business; routine status
+threads fall mid-day. Vary times across roles and seniority.
+
+Output a single JSON object:
+{
+  "email_threads": [
+    {
+      "subject": "Email subject line",
+      "initiator_id": "p1",
+      "participant_ids": ["p1", "p2"],
+      "cc_ids": ["p3"],
+      "day_of_week": 0,
+      "preferred_time": "08:30",
+      "num_messages": 3,
+      "purpose": "Why this email thread happens",
+      "tone": "professional|casual|urgent|technical",
+      "related_meeting_id": null,
+      "related_project_id": "proj_1",
+      "is_followup": false
+    }
+  ]
+}

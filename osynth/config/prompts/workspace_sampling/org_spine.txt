@@ -1,0 +1,89 @@
+Given this company, generate the lightweight organizational spine.
+
+Company:
+{{COMPANY_JSON}}
+
+Target headcount across the whole organization: {{NUM_PEOPLE}}
+
+Requirements:
+- Define the team structure (departments / teams) with a manager per team
+- Distribute the target headcount across teams (sum of `target_headcount` should equal {{NUM_PEOPLE}})
+- Capture the cross-team reporting tree (manager → their manager) — must form a tree (one root, no cycles)
+- Optionally include 0-3 external people (use IDs "ext1", "ext2", ...) when plausible
+- All names and companies must be fictitious synthetic data only
+- Most people should have `nickname_usage = "none"` and an empty `nickname`
+- A minority of people should have a plausible informal `nickname`; some of those should use `nickname_usage = "sometimes"` and fewer should use `nickname_usage = "mostly"`
+
+{{ORG_CONSTRAINTS}}
+
+Do NOT generate full per-person sketches here — only the per-team `target_headcount`, `role_mix` and `manager_id`. People are filled in by per-team fanout calls afterwards.
+
+The team manager and any direct reports (other managers reporting to this manager) must already have person IDs reserved here so the cross-team reporting tree references them. Use IDs "p1", "p2", ... for those, and assign each manager to a team.
+
+Output a single JSON object:
+{
+  "teams": [
+    {
+      "id": "team_eng",
+      "name": "Engineering",
+      "department": "Engineering",
+      "purpose": "Build and maintain the core product",
+      "manager_id": "p1",
+      "parent_team_id": null,
+      "target_headcount": 4,
+      "role_mix": "1 EM + 3 IC engineers (mix of seniorities)"
+    }
+  ],
+  "managers": [
+    {
+      "id": "p1",
+      "name": "Full Name",
+      "gender": "non-binary",
+      "nickname": "",
+      "nickname_usage": "none",
+      "role_title": "VP of Engineering",
+      "department": "Engineering",
+      "level": "VP",
+      "team_id": "team_eng",
+      "email": "firstname.lastname@<company-email-domain>",
+      "personality_hint": "direct and analytical leader",
+      "speaking_hint": "measured pace, rarely uses fillers"
+    }
+  ],
+  "reporting": {
+    "p2": "p1"
+  },
+  "external_people_sketches": [
+    {
+      "id": "ext1",
+      "name": "Full Name",
+      "gender": "female",
+      "nickname": "",
+      "nickname_usage": "none",
+      "organization": "Fictitious External Company",
+      "relationship_type": "prospect",
+      "role_title": "VP of Operations",
+      "email": "full.name@fictitiousexternalco.com",
+      "personality_hint": "skeptical and practical",
+      "speaking_hint": "fast talker, uses filler words frequently"
+    }
+  ]
+}
+
+Notes:
+- `managers` lists every person you placed at a manager level (one per team plus any higher-level managers). These are *full* sketches — the per-team fanout will not regenerate them. Set their `team_id` to the team they manage (or for higher-level managers, the team they belong to organizationally).
+- `reporting` only needs to encode the manager-to-manager chain you defined in `managers`. IC reporting is implied by team membership and is filled in by the team fanout.
+- IDs assigned to managers are reserved — team-level fanout calls must NOT reuse them.
+- Choose a single realistic corporate email domain for the company (e.g., `acmecorp.io`, `acmecorp.com`, region-appropriate TLD) and use it for every internal `email`. External people should use their own organization's domain.
+
+Gender values: "male", "female", "non-binary"
+Nickname usage values: "none", "sometimes", "mostly"
+
+For speaking_hint accents, use accents natural for the workplace's language and region. Examples: {lang:accent_examples|join:", "}.
+
+Level hierarchy:
+- C-Suite: CEO, CTO, etc.
+- VP: Vice Presidents
+- Director: Department heads
+- Manager: Team leads
+- IC: Individual contributors

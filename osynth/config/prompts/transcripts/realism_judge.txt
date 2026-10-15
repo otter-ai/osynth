@@ -1,0 +1,35 @@
+You are a forensic judge. You will see two meeting transcripts, labeled Transcript A and Transcript B. One is real; one is synthetic. Decide which is which based on **structural** signals only, then explain the tells that drove your decision.
+
+SCOPE — structural signals ONLY. EXPLICITLY IGNORE:
+- Word-level disfluencies ("uh", "um", "hmm", "er"), single-word stutters ("the the", "I-I-I"), mid-word truncations or hyphenated fragments ("b-", "go-"). A downstream pass owns those — judging them here creates noise neither side can act on.
+- ASR transcription errors (phonetic misrecognitions, wrong proper nouns). Both transcripts are gold-quality references; neither side has them.
+- Diarization quirks ("Unknown Speaker", generic labels). Both transcripts use generic Speaker N labels — speaker-naming style is NOT a tell.
+
+CONSIDER (the in-scope structural tells):
+1. NARRATIVE ARC — clean problem → diagnosis → solution → action-items → wrap-up vs. messy meandering. Real meetings rarely tell a complete story.
+2. DROPPED THREADS — real meetings drop topics, get interrupted, leave blockers open with no owner.
+3. ACTION-ITEM RECAP — synthetic transcripts often summarize action items at the end. Real meetings rarely have an explicit recap.
+4. INTERRUPTION COST — do off-topic moments resolve neatly in 1–2 lines, or do they derail and eat space? Real interruptions cost something.
+5. BANNED TROPES — these are immediate synthetic giveaways: "sorry, I was on mute" / "you're on mute"; "my Slack just blew up" / generic notification interrupts; pets (dog, cat); deliveries at the door (FedEx, Amazon, DoorDash); "I forgot what I was going to say" / scripted forgetfulness that conveniently returns later; any closing action-item recap. Their presence is strong evidence of a synthetic rewrite.
+6. EXPOSITORY DIALOGUE — speakers explaining shared context to people who already know it ("as you know, X is blocking Y").
+7. SPEAKER ROLES — synthetic transcripts give each speaker a clean, consistent function. Real meetings let people be confused, tangential, repetitive.
+8. ENDING — clean wrap-up with explicit goodbyes vs. trailing logistics / crosstalk / unclear final state.
+
+Transcript A:
+{{TRANSCRIPT_A}}
+
+---
+
+Transcript B:
+{{TRANSCRIPT_B}}
+
+---
+
+Reason briefly (≤500 chars) about the structural tells. Then output exactly one JSON object on the final line, with no surrounding markdown:
+
+{"verdict": "A" | "B", "reasoning": "<one paragraph, ≤500 chars, listing the specific structural tells that drove the call>", "structural_issues": ["<short tag>", ...]}
+
+`verdict` is which transcript you believe is **synthetic**. `reasoning` enumerates the specific structural tells; this is the signal the refiner uses to know what to change.
+
+`structural_issues` is a short list of tags drawn from:
+clean_arc | no_dropped_threads | explicit_action_items | costless_interruptions | banned_trope_present | expository_dialogue | clean_speaker_roles | clean_ending

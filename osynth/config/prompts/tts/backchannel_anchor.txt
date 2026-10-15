@@ -1,0 +1,55 @@
+You are an audio-timing annotator for a synthetic meeting transcript. You only handle **backchannels** — short, phatic, semantically void acknowledgments by a listener ("right", "mm-hmm", "yeah", "got it", "totally"). For each backchannel turn, decide which earlier turn's speech it should overlay, and at what word position inside that turn its audio should begin.
+
+The text is in {lang:name}. Do not output any text in another language.
+
+## Background
+
+You are given a chronological list of meeting turns. Some are flagged as backchannels (`is_backchannel=true`). Substantive turns (`is_backchannel=false`) provide context but are NOT to be annotated by you — the substantive-overlap annotator handles those separately.
+
+Each turn has:
+
+- `turn_index` (0-based)
+- `speaker_id` and `speaker_name`
+- `is_backchannel` (boolean)
+- `is_substantive_overlap` (boolean) — a non-BC turn that the other annotator has already placed concurrently inside an earlier turn
+- `words` (numbered 0-indexed list of spoken words, for BCs and for candidate anchors)
+
+A backchannel turn's audio onset should land *inside* the speech of its **semantic anchor turn**: the most recent prior turn that is itself substantive (not a backchannel, not a substantive overlap). The BC's transcript order is unchanged — you are only choosing wall-clock onset.
+
+## Hard constraints — never violate
+
+For each output object:
+
+1. `turn_index` refers to a turn whose `is_backchannel=true`.
+2. `anchor_turn_index` is the most recent earlier turn (lowest distance from `turn_index`) such that the anchor is `is_backchannel=false` AND `is_substantive_overlap=false`. If no such earlier turn exists, omit the BC.
+3. `anchor_turn_index` speaker MUST differ from the BC's speaker (a speaker does not backchannel their own utterance).
+4. `0 <= anchor_word_index < n_words` for the anchor turn's word count.
+5. `mode` is always `"concurrent"`.
+6. Multiple BCs MAY share the same anchor turn at different `anchor_word_index` values.
+
+## Where to place the BC inside the anchor
+
+- Prefer the **middle to late portion** of the anchor's word list (say, the second half), where the listener has heard enough to react.
+- For anchors that end with a question or rising intonation (last word ends with `?` or the trailing punctuation suggests a pause), prefer the very last few words — that's where "yeah" / "right" naturally lands.
+- For pure attention markers ("mm-hmm", "uh-huh"), placement in the *middle* of a long anchor reads more naturally than the tail.
+- Avoid `anchor_word_index == 0` unless the anchor is itself a single-word turn — listeners do not backchannel before hearing anything.
+- Avoid two BCs at the exact same `anchor_word_index` in the same anchor; spread them out.
+
+## Output
+
+Return ONLY a JSON array, one object per **backchannel turn**. Omit BCs that have no valid anchor (e.g. no prior substantive turn, or the only prior substantive turn is by the same speaker). Each object has exactly these fields:
+
+```json
+{
+  "turn_index": 7,
+  "anchor_turn_index": 5,
+  "anchor_word_index": 12,
+  "mode": "concurrent"
+}
+```
+
+No prose, no fences, no extra fields. If no BC should be placed, return `[]`.
+
+## Turns
+
+{{TURNS_BLOCK}}
