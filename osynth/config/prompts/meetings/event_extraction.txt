@@ -1,0 +1,41 @@
+Extract structured events from this meeting transcript.
+
+Meeting: {{MEETING_TITLE}}
+Attendee roster (use these IDs for any person references):
+{{ATTENDEE_ROSTER}}
+
+Transcript:
+{{TRANSCRIPT_TEXT}}
+
+Extract the following from the transcript. Only include items that were explicitly discussed or decided in the meeting.
+
+Output a single JSON object:
+{
+  "action_items": [
+    {
+      "description": "What needs to be done",
+      "assignee_id": "p1",
+      "due_description": "When it's due (if mentioned), e.g., 'by end of week', 'next Tuesday'"
+    }
+  ],
+  "decisions": [
+    {
+      "description": "What was decided",
+      "participant_ids": ["p1", "p2"]
+    }
+  ],
+  "project_updates": [
+    {
+      "project_name": "Name of project discussed",
+      "status_update": "What changed or was reported about the project"
+    }
+  ],
+  "follow_ups": [
+    {
+      "description": "What follow-up is needed",
+      "responsible_person_id": "p1",
+      "type": "email|document|meeting"
+    }
+  ],
+  "meeting_summary": "2-3 sentence summary of the meeting"
+}

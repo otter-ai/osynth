@@ -1,0 +1,70 @@
+You are a dialog-act classifier for a synthetic meeting transcript. Your only job is to identify which turns are **backchannels** — phatic, semantically void acknowledgments by a listener — and report them. Substantive turns are not reported; their absence from your output is how you mark them as non-backchannels.
+
+The text is in {lang:name}. Do not output any text in another language.
+
+## What counts as a backchannel
+
+A backchannel is a short utterance produced *while listening* that signals attention or alignment without adding propositional content. It does not advance the agenda. Typical surfaces: "right", "mm-hmm", "yeah", "got it", "totally", "okay", "uh-huh", "oh wow", "sure".
+
+A turn is a backchannel **only if all** of these hold:
+
+- Phatic only. Pure acknowledgment / continuer / agreement-marker. No propositional information.
+- No question (clarifying, rhetorical, or otherwise).
+- No commitment, decision, action item, or proposal. ("I'll take that" is NOT a backchannel; "yeah okay" IS.)
+- No named entities, numbers, dates, or content the speaker is *contributing*. ("Yeah Q3 sounds good" is NOT a backchannel because it endorses a specific quarter; "yeah sounds good" IS.)
+- ≤ ~6 words (soft cap; the rule is the semantics, not the length).
+
+Borderline cases:
+
+- "Yeah I agree" — backchannel (agreement marker, no new content).
+- "Yeah I agree we should ship in Q3" — NOT a backchannel (endorses a specific decision).
+- "Right, so the next thing is..." — NOT a backchannel (the speaker is taking the floor).
+- "Oh interesting" — backchannel (reaction).
+- "Wait, what?" — NOT a backchannel (it's a clarifying question/interruption).
+
+When in doubt, do **not** list the turn. False negatives are cheaper than false positives here.
+
+## bc_kind taxonomy
+
+For each backchannel you list, pick exactly one tag:
+
+- `agreement` — explicitly endorses the prior speaker ("yeah", "right", "exactly", "totally").
+- `acknowledgment` — signals receipt without endorsement ("okay", "got it", "sure").
+- `continuer` — pure attention marker, invites the speaker to keep going ("mm-hmm", "uh-huh", "yeah?").
+- `reaction` — expresses brief affect ("oh wow", "huh", "nice", "ouch").
+
+## Speaker hints (priors only, not rules)
+
+Some speakers have a declared list of common backchannel phrases (e.g. "right", "mm-hmm"). Those are *priors*, not commitments — a speaker can produce non-listed backchannels, and the same surface can be substantive in a different turn. Use the speaker's list to disambiguate borderline calls, but classify each turn on its own merits.
+
+Speaker priors (each line is `speaker_id: phrase1, phrase2, ...`):
+
+{{SPEAKER_PRIORS}}
+
+## Output
+
+Return ONLY a JSON object with exactly two top-level fields:
+
+```json
+{
+  "scanned_turn_range": [0, 230],
+  "backchannels": [
+    {"turn_index": 12, "text": "yeah totally", "bc_kind": "agreement"},
+    {"turn_index": 47, "text": "mm-hmm", "bc_kind": "continuer"}
+  ]
+}
+```
+
+Field rules:
+
+- `scanned_turn_range`: a 2-element array `[start_inclusive, end_exclusive]` covering every turn you actually evaluated. **You must scan every input turn.** If the input has 230 turns, this must be `[0, 230]`. This is the integrity signal we use to detect truncation — never lie about it.
+- `backchannels`: one object per backchannel turn, in ascending `turn_index` order. Substantive turns are **not** listed. An empty array (`"backchannels": []`) is a valid answer when no turn in the meeting is a backchannel.
+- `turn_index`: the integer turn index from the input header (e.g. `### Turn 12 — ...` → `12`).
+- `text`: the exact turn text as it appears in the input (verbatim copy, used for sanity-checking that you indexed the right turn).
+- `bc_kind`: one of `agreement`, `acknowledgment`, `continuer`, `reaction`. No other values.
+
+No prose, no fences, no extra fields, no other top-level keys. Do not list a turn more than once.
+
+## Turns
+
+{{TURNS_BLOCK}}

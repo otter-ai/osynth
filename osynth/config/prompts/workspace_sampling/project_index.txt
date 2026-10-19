@@ -1,0 +1,36 @@
+Given this company and organization, plan a project index.
+
+Company:
+{{COMPANY_JSON}}
+
+Organization summary:
+{{ORG_SUMMARY}}
+
+Simulation period: {{START_DATE}} to {{END_DATE}}
+
+Generate a lightweight index that groups {{NUM_PROJECTS}} projects into 1-4 clusters. A cluster is a coherent area of work (by department, business area, or theme). Each cluster lists the project IDs and one-line names that belong to it; the per-cluster fanout calls afterwards will fill in the project sketches.
+
+Constraints:
+- Allocate every project to exactly one cluster
+- Sum of project counts across clusters must equal {{NUM_PROJECTS}}
+- Use project IDs "proj_1", "proj_2", ... globally unique across clusters
+- Reserve a span of project IDs for each cluster (so the fanout calls don't collide)
+- Cluster ownership should be plausible given the org structure
+
+Output a single JSON object:
+{
+  "clusters": [
+    {
+      "id": "cluster_platform",
+      "name": "Platform",
+      "description": "Core platform and infrastructure projects",
+      "owning_team_ids": ["team_eng"],
+      "project_ids": ["proj_1", "proj_2"],
+      "project_names": ["Auth Refactor", "Billing Redesign"]
+    }
+  ]
+}
+
+Notes:
+- `project_ids` and `project_names` must be the same length and aligned positionally.
+- `owning_team_ids` is just a hint to the fanout call about which team's people are most likely to staff projects in this cluster.

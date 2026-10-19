@@ -1,0 +1,129 @@
+# Two-week workspace — the generation stack used for the OtterSynth evaluation split.
+#
+# Writer: claude-sonnet-4-6; realism judge: gemini-3.1-pro-preview; refiner:
+# claude-opus-4-7. Requires ANTHROPIC_API_KEY and GOOGLE_API_KEY (see README).
+#
+# Paths are relative to the working directory unless absolute. Prepare the
+# inputs first:
+#   data/voice_cache        scripts/prepare_voice_cache.py
+#   data/ami/normalized     scripts/prepare_ami_reference.py
+#   data/noise/             supply local WAVs/metadata (see README)
+
+seed: 60001
+language: "en"
+model: "claude-sonnet-4-6"
+output_root: "outputs"
+group: "example"
+run_id: "run_example_14d_fintech_payments_midmarket"
+
+workspace:
+  company_size: "midmarket"
+  industry: "Fintech"
+  domain: "payments"
+  time_period_start: "2026-05-18"
+  time_period_end: "2026-05-31"
+  max_speakers: 12
+  working_hours: [9, 18]
+  working_days: [0, 1, 2, 3, 4]
+  timezone: "America/New_York"
+
+tts:
+  model: "Qwen/Qwen3-TTS-12Hz-1.7B-Base"
+  voice_cache_dir: "data/voice_cache"
+  voice_source: "commonvoice"
+  mode: "local"
+  formatting_model: "claude-sonnet-4-6"
+  enrollment_text_model: "claude-sonnet-4-6"
+  enrollment_target_seconds: 15
+  enrollment_min_seconds: 10
+  enrollment_max_seconds: 20
+  enrollment_candidate_count: 3
+  max_turn_duration_s: 180
+  max_seconds_per_char: 0.5
+  max_retries: 3
+
+generation:
+  generate_audio: true
+  generate_slides: false
+  max_concurrent: 4
+  anti_exposition: true
+  llm:
+    default_max_output_tokens: 8192
+    step_1:
+      org_spine: 6144
+      team_people_sketch: 4096
+      project_index: 2048
+      project_cluster_sketch: 4096
+      recurring_meetings_company: 4096
+      recurring_meetings_team: 4096
+      recurring_meetings_cross: 4096
+    step_2:
+      narrative: 16384
+      week_frame: 4096
+      week_meetings: 12288
+      week_emails: 8192
+      week_documents: 6144
+      week_slides: 3072
+    step_4:
+      meeting_transcript: 24576
+      document: 16384
+      slides: 16384
+  realism_rewrite:
+    enabled: true
+    model: "claude-sonnet-4-6"
+    max_concurrent: 4
+    ami_reference_dir: "data/ami/normalized"
+    ami_reference_lines: 200
+    # Judge -> refine loop; the judge is from a different model family than
+    # the writer and refiner.
+    refine_iterations: 5
+    judge_model: "gemini-3.1-pro-preview"
+    judge_reasoning_effort: null
+    refine_model: "claude-opus-4-7"
+    refine_reasoning_effort: null
+    judge_candidate_lines: 200
+    early_stop_on_real_verdict: true
+    max_word_count_shrink: 0.60
+    max_word_count_expand: 0.40
+  meeting_join_mode_distribution:
+    virtual: 0.1
+    in_person: 0.4
+    hybrid: 0.5
+  work_arrangement_distribution:
+    remote: 0.1
+    hybrid: 0.6
+    in_person: 0.3
+
+speech_pipeline:
+  overlap:
+    enabled: true
+    annotator_model: "claude-sonnet-4-6"
+    target_rate: 0.15
+    full_overlap_rate: 0.30
+    onset_jitter_ms: 50
+    max_chain_depth: 1
+    min_post_overlap_gap_ms: 100
+    in_room_bias: 1.5
+    remote_bias: 0.7
+  backchannel:
+    classifier_model: "claude-sonnet-4-6"
+    anchor_model: "claude-sonnet-4-6"
+
+alignment:
+  # NeMo Forced Aligner script from a NeMo checkout (see README). Relative to
+  # the working directory. Set method: "energy" to skip forced alignment.
+  nfa_script: third_party/NeMo/tools/nemo_forced_aligner/align.py
+
+room_simulation:
+  enabled: true
+  sample_rate: 16000
+  # Relative paths are resolved against output_root.
+  background_noise_dir: ../data/noise/background
+  background_environments: [office]
+  hum_noise_dir: ../data/noise/hum
+  event_noise_dir: ../data/noise/events
+  background_snr_db: 20
+  events_per_minute: 0.5
+
+validation:
+  fail_on_error: false

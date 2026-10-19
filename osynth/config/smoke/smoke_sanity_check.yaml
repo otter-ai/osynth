@@ -1,0 +1,81 @@
+# Smoke sanity check — fastest live data-generation run.
+#
+# This intentionally skips TTS/audio so it only needs the core dependency set
+# and an Anthropic API key. Use ../example_14d.yaml for the full audio path.
+
+seed: 42
+language: "en"
+model: "claude-sonnet-4-6"
+output_root: "outputs"
+group: "smoke"
+run_id: "run_smoke_sanity"
+
+workspace:
+  company_size: "startup"
+  industry: "B2B SaaS"
+  domain: "contract_management"
+  time_period_start: "2026-03-23"
+  time_period_end: "2026-03-23"
+  max_speakers: 2
+  working_hours: [9, 17]
+  working_days: [0]
+  timezone: "America/Los_Angeles"
+
+tts:
+  voice_cache_dir: "unused"
+  voice_source: "static"
+  mode: "local"
+  formatting_model: "claude-sonnet-4-6"
+  enrollment_text_model: "claude-sonnet-4-6"
+
+generation:
+  generate_audio: false
+  generate_slides: false
+  max_concurrent: 2
+  llm:
+    default_max_output_tokens: 8192
+    step_4:
+      meeting_transcript: 12288
+  realism_rewrite:
+    enabled: false
+  duration_targeting:
+    # Smoke runs deliberately keep transcripts short to stay fast and cheap;
+    # the duration-targeting floor/retry logic is exercised by full runs such as
+    # ../example_14d.yaml.
+    enabled: false
+  meeting_join_mode_distribution:
+    virtual: 0.55
+    in_person: 0.20
+    hybrid: 0.25
+  work_arrangement_distribution:
+    remote: 0.25
+    hybrid: 0.55
+    in_person: 0.20
+
+speech_pipeline:
+  # Overlap annotation runs in step 7 even when generate_audio=false: the LLM
+  # decisions land in formatted_turns.json so the overlap path is exercised by
+  # the smoke run. Mixing only takes effect when generate_audio=true.
+  overlap:
+    enabled: true
+    annotator_model: "claude-sonnet-4-6"
+    target_rate: 0.20          # bump above default to make overlaps visible at 2 speakers
+    full_overlap_rate: 0.30
+    onset_jitter_ms: 50
+    max_chain_depth: 1
+    min_post_overlap_gap_ms: 100
+    in_room_bias: 1.5
+    remote_bias: 0.7
+
+room_simulation:
+  enabled: true                # smoke runs skip TTS/audio anyway, so step 10 exits early
+  sample_rate: 16000
+  # Supply local WAVs/metadata as described in README; relative to output_root.
+  # Used when generate_audio is flipped on.
+  background_noise_dir: ../data/noise/background
+  background_environments: [office]
+  hum_noise_dir: ../data/noise/hum
+  event_noise_dir: ../data/noise/events
+
+validation:
+  fail_on_error: false

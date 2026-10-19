@@ -1,0 +1,58 @@
+cff-version: 1.2.0
+message: "If you use OtterSynth, please cite the paper below."
+title: "OtterSynth"
+repository-code: "https://github.com/otter-ai/osynth"
+license: Apache-2.0
+authors:
+  - family-names: Porada
+    given-names: Ian
+  - family-names: Tripathi
+    given-names: Suraj
+  - family-names: Animesh
+    given-names: Chaitanya
+  - family-names: Sari
+    given-names: Leda
+  - family-names: Narisetty
+    given-names: Chaitanya
+  - family-names: Matthews
+    given-names: Austin R.
+  - family-names: Yu
+    given-names: Bohan
+  - family-names: Thulasiram
+    given-names: Ramesh L.
+  - family-names: Sell
+    given-names: Gregory
+  - family-names: Chin
+    given-names: Kean
+  - family-names: Genzel
+    given-names: Dmitriy
+preferred-citation:
+  type: conference-paper
+  title: "OSynth: A Longitudinal, Context-Sensitive Evaluation of Meeting Understanding"
+  collection-title: "Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing"
+  publisher:
+    name: "Association for Computational Linguistics"
+  year: 2026
+  authors:
+    - family-names: Porada
+      given-names: Ian
+    - family-names: Tripathi
+      given-names: Suraj
+    - family-names: Animesh
+      given-names: Chaitanya
+    - family-names: Sari
+      given-names: Leda
+    - family-names: Narisetty
+      given-names: Chaitanya
+    - family-names: Matthews
+      given-names: Austin R.
+    - family-names: Yu
+      given-names: Bohan
+    - family-names: Thulasiram
+      given-names: Ramesh L.
+    - family-names: Sell
+      given-names: Gregory
+    - family-names: Chin
+      given-names: Kean
+    - family-names: Genzel
+      given-names: Dmitriy

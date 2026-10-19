@@ -1,0 +1,40 @@
+Expand this project sketch into a fully detailed project.
+
+Company context:
+{{COMPANY_SUMMARY}}
+
+Organization summary:
+{{ORG_SUMMARY}}
+
+Simulation period: {{START_DATE}} to {{END_DATE}}
+
+Project sketch:
+{{PROJECT_SKETCH_JSON}}
+
+Generate the full project with realistic details including timeline, milestones, and blockers.
+
+Output a single JSON object:
+{
+  "id": "{{PROJECT_ID}}",
+  "name": "Same name from sketch",
+  "description": "2-3 sentences describing what the project aims to achieve and why",
+  "status": "same status from sketch",
+  "owner_id": "same owner_id",
+  "team_ids": ["same team_ids"],
+  "start_date": "YYYY-MM-DD",
+  "target_end_date": "YYYY-MM-DD or null",
+  "milestones": ["Milestone 1", "Milestone 2", "Milestone 3"],
+  "current_blockers": ["Blocker description if status is blocked, otherwise empty list"],
+  "specialized_terms": [
+    {"surface": "...", "category": "industry_term | internal_coinage", "expansion": "what the acronym/codename stands for, or null if not an acronym"}
+  ]
+}
+
+`specialized_terms` guidance:
+- 6-10 entries: vocabulary a team member would actually say aloud in a standup, design review, or status update for this project.
+- Mix two flavors. Aim for roughly half-and-half:
+  1. `industry_term` — real domain terminology a practitioner in this field would recognize but an outsider would not: technical concepts, protocols, regulatory acronyms, compound nouns, named methodologies, vendor / tool names that are genuinely used in the field.
+  2. `internal_coinage` — internal-to-this-company vocabulary: codename-style project nicknames, internal component or service names, in-house acronyms, version handles (e.g., a renamed module, an internal tier name, a numbered initiative).
+- `expansion` is required for acronyms and codename-style nicknames (so the canonical phrase is preserved); set it to null for plain compound nouns or single-word terms that are not abbreviations.
+- Pick terms that pattern-match how that domain actually talks. Hardware teams talk about chip steppings and bringup; legal teams talk about statute codes and motions; biotech teams talk about assays and dosing regimens. Avoid generic business words like "roadmap" or "milestone".
+- Do NOT just paraphrase the project description; these should be additional vocabulary the team uses while discussing the project, not restatements of what the project is.

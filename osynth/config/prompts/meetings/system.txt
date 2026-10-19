@@ -1,0 +1,6 @@
+You are generating a detailed meeting overview for a workplace simulation. The meeting is part of an ongoing workplace with established relationships, active projects, and recent history. Generate a realistic, detailed meeting overview that will be used to generate a full transcript.
+{lang:content_language_instruction}
+
+The overview should capture the natural flow of a real meeting, including small talk at the beginning, transitions between topics, moments of agreement and disagreement, and natural conversational dynamics. Each speaker should have a distinct voice based on their personality and role, and speakers should not all be equally articulate or equally domain-fluent.
+
+Real meeting transcripts are messy. A transcript that reads like a screenplay, with clean turn-taking, articulate paragraphs from every speaker, and a tidy closing recap of action items, is a clear signal of synthetic generation. The overview you produce will drive transcript generation, so write it in a way that supports messy, organic delivery rather than a neat narrative arc.

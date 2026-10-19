@@ -1,0 +1,34 @@
+Generate a realistic workplace document.
+
+Company context:
+{{COMPANY_SUMMARY}}
+
+Document specification:
+- Title: {{DOCUMENT_TITLE}}
+- Type: {{DOC_TYPE}}
+- Author: {{AUTHOR_SUMMARY}}
+- Related project: {{PROJECT_CONTEXT}}
+- Purpose: {{DOCUMENT_PURPOSE}}
+- Shared with: {{SHARED_WITH}}
+
+Related context (if any):
+{{RELATED_CONTEXT}}
+
+Requirements:
+- Content should be realistic for this document type
+- Length should be appropriate (specs: 500-1500 words, notes: 200-500 words, proposals: 800-2000 words)
+- Use proper document structure (headings, bullet points, tables where appropriate)
+- Reference real people and projects from the context
+- Match the author's expertise and communication style
+- When the related project lists specialized vocabulary, write the document the way an in-team author would: use those terms where they naturally fit the content, introduce an acronym at first mention and shorthand it afterwards, and feel free to substitute synonyms or compress to a shorter form once the term is established. Do not force every term into the document; only use those relevant to what the document covers, and do not gloss or define them for an outside audience.
+
+Output a single JSON object:
+{
+  "id": "{{DOCUMENT_ID}}",
+  "title": "Document title",
+  "content": "Full document content in markdown format",
+  "author_id": "{{AUTHOR_ID}}",
+  "doc_type": "{{DOC_TYPE}}",
+  "related_project": "{{PROJECT_ID}}",
+  "shared_with_ids": ["p1", "p2"]
+}

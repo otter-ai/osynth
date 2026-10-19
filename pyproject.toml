@@ -1,0 +1,74 @@
+[project]
+name = "osynth"
+version = "1.0.0"
+description = "OtterSynth: synthetic multi-party meeting audio grounded in simulated workspaces"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.11"
+authors = [
+    { name = "Ian Porada" },
+    { name = "Suraj Tripathi" },
+    { name = "Chaitanya Animesh" },
+    { name = "Leda Sari" },
+    { name = "Chaitanya Narisetty" },
+    { name = "Austin R. Matthews" },
+    { name = "Bohan Yu" },
+    { name = "Ramesh L. Thulasiram" },
+    { name = "Gregory Sell" },
+    { name = "Kean Chin" },
+    { name = "Dmitriy Genzel" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+]
+dependencies = [
+    "anthropic>=0.40.0",
+    "dynaconf>=3.2.0",
+    "google-genai>=1.0.0",
+    "numpy>=1.24.0",
+    "openai>=1.60.0",
+    "pydantic>=2.0.0",
+    "pyroomacoustics>=0.10.1",
+    "python-dotenv>=1.0.0",
+    "scipy>=1.11",
+    "soundfile>=0.13.1",
+    "tenacity>=8.0.0",
+]
+
+[project.optional-dependencies]
+# Step 8 (voice-cloned TTS). Needs a CUDA GPU.
+tts = [
+    "torch",
+    "torchaudio",
+    "qwen-tts",
+    "huggingface_hub",
+]
+# Word-level forced alignment (NeMo Forced Aligner) used for overlap placement.
+nfa = [
+    "nemo-toolkit[asr]>=2.5.3",
+    "onnx<1.19.0",
+]
+
+[project.urls]
+Repository = "https://github.com/otter-ai/osynth"
+
+[project.scripts]
+osynth = "osynth.main:main"
+osynth-smoke = "osynth.smoke:main"
+
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["osynth*"]
+
+[tool.setuptools.package-data]
+osynth = ["config/**/*.yaml", "config/**/*.txt", "config/**/*.md"]

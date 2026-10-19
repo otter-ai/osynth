@@ -1,0 +1,51 @@
+Generate the slide presentations for this week, conditioned on the
+authoritative weekly frame and the meetings already planned.
+
+The frame has already established the week's narrative direction, state
+changes, and content volume targets. The meetings family has produced
+the adhoc meetings list. Your job is to elaborate ONLY the slides family
+— typically only for meetings that have should_generate_slides=true or
+for review/all-hands meetings. Do not introduce themes that contradict
+the frame.
+
+Template variables:
+  {{COMPANY_SUMMARY}}            — name + industry + size + situation
+  {{NARRATIVE_SUMMARY}}          — period-wide narrative arc
+  {{WEEK_NUM}} / {{TOTAL_WEEKS}} — 1-based week index and total
+  {{WEEK_START}} / {{WEEK_END}}  — ISO dates bounding this week
+  {{PEOPLE_ROSTER}}              — all valid person IDs you may reference
+  {{WEEK_FRAME_JSON}}            — authoritative frame produced for this week
+  {{WEEK_MEETINGS_JSON}}         — adhoc meetings + outcomes from the meetings family
+
+Company: {{COMPANY_SUMMARY}}
+Overall narrative: {{NARRATIVE_SUMMARY}}
+Week: {{WEEK_START}} to {{WEEK_END}} (Week {{WEEK_NUM}} of {{TOTAL_WEEKS}})
+
+People in the organization (use ONLY these person IDs for author_id):
+{{PEOPLE_ROSTER}}
+
+Authoritative weekly frame (treat as ground truth):
+{{WEEK_FRAME_JSON}}
+
+Meetings planned this week (already produced by the meetings fanout call):
+{{WEEK_MEETINGS_JSON}}
+
+Generate the slide presentations family. Hit the `slides_target` from
+the frame's content_plan as a soft target — usually 0 unless a review,
+all-hands, or formal customer meeting is on the calendar. Each
+presentation's `meeting_title` MUST exactly match a meeting title from
+the planned meetings above.
+
+Output a single JSON object:
+{
+  "slide_presentations": [
+    {
+      "title": "Presentation title",
+      "author_id": "p5",
+      "meeting_title": "The meeting this is for",
+      "num_slides": 8,
+      "purpose": "What the presentation covers",
+      "key_points": ["Point 1", "Point 2"]
+    }
+  ]
+}

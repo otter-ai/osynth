@@ -1,0 +1,79 @@
+You are an audio-timing annotator for a synthetic meeting transcript. The transcript text is already written; your job is to decide *only* which turns should start while a previous speaker is still talking, and at what word position the overlap begins.
+
+The text is in {lang:name}. Do not output any text in another language.
+
+## Background
+
+A list of meeting turns is provided in chronological emission order. Each turn has:
+
+- `turn_index` (integer, 0-based)
+- `speaker_id` (opaque identifier; assume different ids = different speakers)
+- `speaker_name` (display name, for readability only)
+- `join_mode` (one of: `in_room`, `remote`, `phone`, or empty if unknown) — speakers in the same room overlap with each other more often than speakers on a video call.
+- `words` (a numbered list of the spoken words of the turn, 0-indexed, after spoken-form normalization)
+
+When two turns overlap, the second turn's audio onset is placed *inside* the first turn's speech, at a specific word position in the first turn. The second turn still appears in the transcript in its emitted order — you are only deciding **when its audio starts on the wall clock**, never the transcript ordering.
+
+## Meeting context
+
+Meeting overall mode: {{MEETING_MODE}}
+Total turns: {{TURN_COUNT}}
+Target overlap rate: roughly {{TARGET_PER_TEN}} out of every 10 inter-speaker boundaries should be annotated as an overlap. Be sparing; the default is "no overlap". Real meetings have far more clean handoffs than overlaps — when uncertain whether a pair overlaps, do not annotate it.
+
+## What counts as an overlap candidate
+
+For a turn `i > 0` to be annotated:
+
+- `anchor_turn_index` must be exactly `i - 1` (the *immediately previous* turn) and have a **different speaker** than turn `i`. Overlap never reaches further back than one turn — intermediate turns separate speakers in conversational time.
+- The anchor should be a substantive turn (≥ ~4 words), not a one-word backchannel.
+- The same speaker must not "talk over themselves" — if the anchor's speaker has a later turn (still mid-utterance) that turn cannot anchor a new overlap onto the same speaker again.
+- The anchor must have already delivered its **main idea** before the overlap onset. A listener cannot react to, or interrupt, content they have not yet heard. If the anchor's core proposition lands in the last few words, the overlap onset must be after that point.
+- Prefer pairs where the transcript text itself signals interruption: anchor ends mid-thought (comma, em-dash, ellipsis, abrupt clause break) and turn `i` starts abruptly or with a reactive opener ("Wait,", "But—", "Yeah but,", "Hold on,", "Actually,").
+- Short reactive comments that *fully sit inside* the anchor's speech ("Oh totally.", "Right.", "Mhm yeah.") are good "concurrent" candidates — but they still need enough of the anchor in front of them to be a plausible reaction.
+
+## Mode selection
+
+Each annotation has a `mode`. In both modes, **err late, not early** — when in doubt, push `anchor_word_index` toward the tail of the anchor's word list, or omit the turn entirely. Premature onsets (the second speaker starting before they could plausibly know what to react to) are the most common failure mode; avoid them.
+
+- `interrupt` — turn `i` cuts the anchor off. The `anchor_word_index` must fall in the **last 20%** of the anchor's words (e.g. for a 20-word anchor, index 16 or later). The anchor's main clause should already be on the table — interrupting in the middle of a setup phrase reads as the interrupter not having listened. For short anchors (< 6 words), use `interrupt` only if the anchor is a clear sentence fragment / abrupt break; otherwise omit.
+- `concurrent` — turn `i` is a side comment that lands inside the anchor without ending it. The `anchor_word_index` must fall in the **second half** of the anchor's words, and preferably in the **last 40%** (roughly indices `0.6 * n_words` through `n_words - 2`). Never place a concurrent reaction in the opening half of the anchor: the listener has not heard enough to react. Reserve `concurrent` for turns short relative to the anchor's remaining words.
+
+About {{FULL_OVERLAP_PCT}}% of annotated overlaps should be `concurrent`; the rest `interrupt`.
+
+## Join-mode bias
+
+- Pairs where **both** speakers have `join_mode = in_room` overlap more often than the base rate; in-room participants step on each other naturally.
+- Pairs where **either** speaker is `remote` or `phone` overlap less often; latency suppresses real-world cut-ins.
+
+Use this to *shift the distribution* of where overlaps land in the transcript — not as a hard rule.
+
+## Hard constraints — never violate
+
+1. `anchor_turn_index == turn_index - 1` (strict adjacency; the immediately previous turn only).
+2. `anchor_speaker_id != self_speaker_id`.
+3. `0 <= anchor_word_index < n_words` (where `n_words` is the count of words listed for the anchor turn).
+4. For `interrupt`, `anchor_word_index >= ceil(0.80 * n_words)` — the onset sits in the last 20% of the anchor.
+5. For `concurrent`, `anchor_word_index >= ceil(0.50 * n_words)` — the onset sits in the second half of the anchor (and ideally past 60%).
+6. Do not annotate the first turn of the meeting.
+7. Do not annotate a turn whose own anchor is itself already an overlap (no chained overlap depth > 1).
+8. Do not annotate two different turns onto the **same** anchor unless the second is clearly a `concurrent` reaction that sits earlier than the first one's interrupt point.
+9. If you are unsure, omit the turn from the output. Default is no overlap.
+
+## Output
+
+Return ONLY a JSON array. One object per turn that should overlap. Omit non-overlapping turns. Each object has exactly these fields:
+
+```json
+{
+  "turn_index": 7,
+  "anchor_turn_index": 6,
+  "anchor_word_index": 18,
+  "mode": "interrupt"
+}
+```
+
+No prose, no fences, no extra fields. If no turn should overlap, return `[]`.
+
+## Turns
+
+{{TURNS_BLOCK}}

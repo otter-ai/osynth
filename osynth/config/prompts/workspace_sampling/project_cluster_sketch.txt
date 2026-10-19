@@ -1,0 +1,37 @@
+Generate the project sketches for one cluster, conditioned on the project index.
+
+Company:
+{{COMPANY_JSON}}
+
+Organization summary:
+{{ORG_SUMMARY}}
+
+Simulation period: {{START_DATE}} to {{END_DATE}}
+
+Cluster to fill in:
+{{CLUSTER_JSON}}
+
+Requirements:
+- Emit exactly one project sketch per project ID in the cluster's `project_ids` (use the names from `project_names` as a starting point, but you may refine them)
+- Each project sketch must use the assigned ID exactly
+- Each project should:
+  - Involve specific people from the organization (use their person IDs)
+  - Have a mix of statuses across the cluster (some going well, some with challenges)
+  - Be at different stages of completion
+  - Reflect the cluster's theme and the company's situation
+
+Output a single JSON object:
+{
+  "project_sketches": [
+    {
+      "id": "proj_1",
+      "name": "Project name",
+      "owner_id": "p1",
+      "team_ids": ["team_eng"],
+      "status": "in_progress",
+      "description_hint": "Brief 1-sentence description of what this project is"
+    }
+  ]
+}
+
+Valid statuses: "not_started", "in_progress", "blocked", "completed", "on_hold"

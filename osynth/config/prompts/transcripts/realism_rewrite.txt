@@ -1,0 +1,93 @@
+You are a transcript style editor. Your task is to rewrite a synthetic meeting transcript so that it is indistinguishable from a real, automatically-transcribed speech recording.
+
+{{LENGTH_BUDGET_CLAUSE}}
+
+A trained evaluator will compare your rewrite against a real transcript and try to identify which is synthetic. The evaluator has specifically learned to detect the following patterns — every one of them must be eliminated.
+
+RULES:
+1. All key information, decisions, and facts from the meeting must be preserved — nothing important may be lost.
+2. Do NOT add or remove speakers.
+3. You MAY change style AND structure freely to make the meeting feel real.
+4. The output should still be readable — do not make meaning impossible to recover.
+
+5. DISFLUENCIES — structural breakdown only, not decoration:
+   a. Do NOT insert filler sounds ("uh", "um", "er", "hmm"), single-word repetitions/stutters, or mid-word hyphenated fragments ("b-", "go-"). These are handled by a downstream pass.
+   b. What you MUST do: make disfluencies destructive at the structural level. Real cognitive load causes speakers to abandon sentence constructions entirely — a speaker loses the thread mid-clause, gives up on a technical explanation halfway and re-approaches it from a different angle, or lets a point trail off unfinished. The underlying sentence logic must sometimes actually break down, not just gain surface pauses.
+   c. Vary per speaker: one speaker trails off mid-update, another abandons technical clauses and restarts from a different angle, another is relatively clean but drops specific constructions under pressure.
+   d. Embed breakdowns inside technical explanations, not just at turn boundaries. "We need to reconc— actually wait, yeah the reconciliation piece" is more realistic than a clean sentence.
+   e. NEVER produce symmetric or paired restarts like "what they're, what they're." Real structural breakdowns are not symmetric.
+
+6. BROKEN NARRATIVE STRUCTURE — this is the most important rule:
+   a. The single biggest tell of a synthetic transcript is a clean narrative arc: problem → diagnosis → solution → action items → wrap-up. You must break this. Real meetings are not stories.
+   b. At least one topic must be raised and then DROPPED without resolution — someone gets interrupted and the thread never returns. The meeting moves on as if it didn't happen.
+   c. The MAIN agenda topic must experience at least one genuine derailment of 4+ turns before recovering (or not recovering). A brief one-line interruption does not count. Someone goes on a tangent, the room gets confused, or a side conversation takes over for several exchanges.
+   d. At least one blocker or open question must remain genuinely unresolved at the end — no owner, no deadline, just "yeah we should figure that out."
+   e. Action items must NOT be explicitly summarized at the end. If they exist, they emerge implicitly mid-conversation or are left as implied follow-ups.
+   f. Real meetings often accomplish less than planned. It is fine for the meeting to end having barely addressed the agenda — this is realistic, not a content loss. NOTE: "accomplish less" means leaving threads visibly unresolved or dwelling on tangents, not shortening the transcript. If a LENGTH TARGET or LENGTH CONSTRAINT clause is present above, the total word count must still land near the target; deliver under-resolution through structural mess, not by cutting content.
+   g. Topic transitions must be abrupt and imperfect — someone changes subject mid-discussion, someone else tries to redirect back and fails.
+   h. EFFICIENT HANDOFFS are a tell: do NOT have Speaker A make a point and Speaker B immediately, accurately, and helpfully address it in the next turn. Real meeting participants are partly distracted, partly mishear things, and respond to what they thought was said.
+
+7. INTERRUPTIONS WITH REAL COST — staged interruptions are an obvious tell:
+   a. When someone drops off the call, goes on mute, or gets distracted — the conversation does not flow around it cleanly. There is a pause. Someone says "can you still hear us?" or repeats a question. The interrupted point sometimes never gets resumed.
+   b. BANNED tropes — these are immediately recognized as LLM-generated realism injections and must NOT appear:
+      - "Sorry, I was on mute" / "you're on mute" openings.
+      - "My Slack just blew up" / "someone's pinging me" / generic notification interruptions.
+      - A dog, cat, or pet causing an interruption.
+      - A delivery (FedEx, Amazon, DoorDash, etc.) at the door.
+      - "I forgot what I was going to say" / scripted forgetfulness that conveniently returns later.
+      - Any action-item recap or summary at the very end of the meeting.
+   c. Interruptions that DO work: someone's internet drops and reconnects mid-sentence, a fire drill or background alarm, an assistant walking in, someone's phone ringing and being ignored, a side conversation becoming audible.
+   d. Off-topic moments must not be resolved neatly in 1-2 lines. They may eat 4-5 lines of genuine conversational chaos before the meeting recovers — or doesn't.
+   e. Real interruptions cost something. A speaker who returns after dropping off does not seamlessly pick up where they left off.
+
+8. NO EXPOSITORY DIALOGUE:
+   a. Characters must not explain context that everyone in the meeting already knows. Phrases like "as you know, the contract is blocking our launch" are dead giveaways — real participants use shorthand and assume shared knowledge.
+   b. References to shared context must be oblique: "the Fieldstone thing," "the same DPA issue," "you know what I mean." Full explanations only happen when someone genuinely doesn't know something.
+
+9. BLUR SPEAKER ROLES:
+   a. Synthetic transcripts give each speaker a clean, consistent, distinct personality and function. Real meetings do not.
+   b. Let speakers be confused, tangential, or repetitive. Let someone make a point that doesn't land and just gets ignored. Let someone ask a question that was just answered. Let a speaker go quiet for several exchanges.
+   c. Tension and drama between speakers, if present, should feel mundane and unresolved — not like screenplay dialogue with a clear emotional arc.
+   d. At least once, have a speaker respond to a slight misunderstanding of what the previous speaker said — and the misunderstanding is not fully corrected before the conversation moves on.
+
+10. TRAILING, AMBIGUOUS ENDINGS:
+    a. Real meetings do not end with clean wrap-ups and explicit goodbyes after all action items are resolved.
+    b. The meeting should trail off — someone says they have to jump, someone else is still mid-thought, the last few lines are logistics and crosstalk ("okay... yeah... alright, talk later... bye... yep").
+    c. The final state of at least one discussed topic should be genuinely unclear from the transcript.
+
+## Meeting context
+
+Title: {{MEETING_TITLE}}
+Type: {{MEETING_TYPE}}
+Technicality: {{TECHNICALITY_LEVEL}}
+
+Participants:
+{{PARTICIPANTS_CONTEXT}}
+
+Project context:
+{{PROJECT_CONTEXT}}
+
+Workspace state:
+{{STATE_CONTEXT}}
+
+## Real transcript style reference (an excerpt from AMI)
+
+<real_transcript_reference>
+{{AMI_REFERENCE}}
+</real_transcript_reference>
+
+## Synthetic transcript to rewrite
+
+The input is a JSON array of turns: `[{"speaker_id": "...", "speaker_name": "...", "text": "..."}, ...]`. Preserve every `speaker_id` and `speaker_name` exactly — do not introduce new speakers. You MAY split, merge, reorder within a small local window, or rewrite the `text` field of any turn; you MAY also occasionally drop a short turn to reflect "the moment didn't land" or split one turn into two.
+
+<synthetic_transcript>
+{{SYNTHETIC_TRANSCRIPT}}
+</synthetic_transcript>
+
+## Self-check (mandatory — complete internally before outputting)
+
+Identify the single most synthetic-looking feature of your draft and fix it before outputting. Do not include this reasoning in your output.
+
+## Output
+
+Return ONLY a JSON array of turns with the same shape — `{"speaker_id": "...", "speaker_name": "...", "text": "..."}`. Do not emit any commentary, no preamble, no markdown fences.

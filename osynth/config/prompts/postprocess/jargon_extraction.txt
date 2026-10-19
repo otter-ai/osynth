@@ -1,0 +1,35 @@
+Extract specialized vocabulary that appears in this artifact.
+
+Artifact type: {{ARTIFACT_TYPE}}
+Artifact title: {{ARTIFACT_TITLE}}
+
+{{PROJECT_HINTS}}
+
+Artifact text:
+---
+{{ARTIFACT_TEXT}}
+---
+
+Goal: identify every piece of specialized vocabulary (domain jargon, internal codenames, acronyms, product / component names, technical compound nouns) that actually appears in the text above. Produce two views.
+
+Output a single JSON object:
+{
+  "surface_terms": [
+    {"surface": "exact string as it appears in the text", "occurrences": <integer count of times this exact surface form appears>}
+  ],
+  "concept_clusters": [
+    {
+      "canonical": "the most complete or definitional form of the concept (e.g., the expanded acronym, the full compound noun)",
+      "variants": ["all surface forms in the text that refer to the same concept — acronym, shorthand, casual synonym, partial reference"],
+      "category": "industry_term | internal_coinage"
+    }
+  ]
+}
+
+Guidance:
+- `surface_terms` is a flat list. List every distinct specialized surface form, exactly as written (preserving capitalization). This view is consumed by ASR-style metrics that score literal token recall, so do NOT collapse variants here — if "CAC" and "Customer Acquisition Cost" both appear, list both.
+- `concept_clusters` collapses variants into one entry per concept. Group acronyms with their expansions, shorthands with their full forms, and casual stand-ins ("the gateway", "that service") only when the surrounding context makes the binding unambiguous. This view is consumed by agent / summary metrics that score concept recall.
+- Use `industry_term` for vocabulary a practitioner in the field would recognize (technical concepts, protocols, named methodologies, vendor / tool names, regulatory acronyms). Use `internal_coinage` for vocabulary specific to this company (project codenames, internal service or component names, in-house acronyms, internal version handles). Use the project hint above to disambiguate when relevant.
+- Do NOT include generic business words (roadmap, milestone, sync, alignment, kickoff) unless they are being used as a proper noun in this workspace.
+- Do NOT invent surface forms that are not in the text.
+- If the artifact contains no specialized vocabulary, return both lists empty: `{"surface_terms": [], "concept_clusters": []}`.
