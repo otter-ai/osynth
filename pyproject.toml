@@ -53,7 +53,7 @@ tts = [
 # Word-level forced alignment (NeMo Forced Aligner) used for overlap placement.
 nfa = [
     "nemo-toolkit[asr]>=2.5.3",
-    "onnx<1.19.0",
+    "onnx<1.23.0",
 ]
 
 [project.urls]
