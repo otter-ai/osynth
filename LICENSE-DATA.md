@@ -3,9 +3,9 @@
 Copyright (c) 2026 Otter.ai, Inc.
 
 The OtterSynth dataset (transcripts, audio, workspace artifacts, latent state and
-annotations) is licensed under the **Creative Commons Attribution-NonCommercial
-4.0 International License (CC BY-NC 4.0)**:
-<https://creativecommons.org/licenses/by-nc/4.0/legalcode>
+annotations) is licensed under the **Creative Commons Attribution
+4.0 International License (CC BY 4.0)**:
+<https://creativecommons.org/licenses/by/4.0/legalcode>
 
 Additional conditions inherited from upstream sources:
 
@@ -27,4 +27,4 @@ Additional conditions inherited from upstream sources:
   fictitious. Any resemblance to real entities is coincidental and does not
   imply any relationship or endorsement.
 - **No warranty.** The dataset is provided "as is", without warranties of any
-  kind, and the licensor is not liable for any use of it (CC BY-NC 4.0, §5).
+  kind, and the licensor is not liable for any use of it (CC BY 4.0, §5).

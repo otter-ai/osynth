@@ -20,7 +20,21 @@ uv run osynth --config osynth/config/example_14d.yaml
 
 ## Data
 
-The full corpus release is pending. We will udpate here once it is available.
+The corpus is available on Hugging Face as two Parquet datasets:
+
+- [OSynth Text](https://huggingface.co/datasets/iporada-otterai/osynth-text):
+  transcripts, workspace context, artifacts, latent state, and annotations.
+- [OSynth Audio](https://huggingface.co/datasets/iporada-otterai/osynth-audio):
+  synthesized meeting audio channels and speaker enrollment clips.
+
+Both datasets include `train` and `test` splits partitioned by workspace. Match
+meeting text to audio channels using `workspace_id` and `meeting_id`. The dataset
+cards include loading examples and configuration details.
+
+Before downloading, open each dataset page and accept the CC BY 4.0 license and
+the acknowledgments, including that persona names and scenarios are fictional
+and any resemblance to real people, organizations, or events is coincidental.
+Access is granted automatically after acceptance.
 
 ## Setup
 
@@ -83,7 +97,7 @@ to `""` to omit that noise layer. Nonempty paths must exist.
 - **Code:** [Apache License 2.0](LICENSE) (see [NOTICE](NOTICE)). It is
   provided "as is", without warranties or conditions of any kind; see
   sections 7–8 of the license.
-- **Data:** [CC BY-NC 4.0](LICENSE-DATA.md). Upstream conditions (voices,
+- **Data:** [CC BY 4.0](LICENSE-DATA.md). Upstream conditions (voices,
   model outputs, references) are listed there.
 
 ## Citation
